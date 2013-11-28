@@ -16,6 +16,11 @@ class LevelCreator
     #TODO: get surrounding blocks
     #TODO: get weights for next block
     #TODO: pick next block
-    new WaterBlock(x, y)
+    if x == 10 && y == 10
+      new DirtBlock(x,y)
+    else
+      new WaterBlock(x, y)
+
+
 
 (exports ? this).LevelCreator = LevelCreator

@@ -1,4 +1,22 @@
 (function() {
+  var DirtBlock;
+
+  DirtBlock = (function() {
+    function DirtBlock(x, y) {
+      this.x = x;
+      this.y = y;
+      this.ui = new DirtBlockUI(this.x, this.y);
+    }
+
+    return DirtBlock;
+
+  })();
+
+  (typeof exports !== "undefined" && exports !== null ? exports : this).DirtBlock = DirtBlock;
+
+}).call(this);
+
+(function() {
   var LevelCreator;
 
   LevelCreator = (function() {
@@ -33,7 +51,11 @@
     };
 
     LevelCreator.prototype.determineBlock = function(x, y) {
-      return new WaterBlock(x, y);
+      if (x === 10 && y === 10) {
+        return new DirtBlock(x, y);
+      } else {
+        return new WaterBlock(x, y);
+      }
     };
 
     return LevelCreator;
@@ -59,6 +81,28 @@
   })();
 
   (typeof exports !== "undefined" && exports !== null ? exports : this).WaterBlock = WaterBlock;
+
+}).call(this);
+
+(function() {
+  var DirtBlockUI,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  DirtBlockUI = (function(_super) {
+    __extends(DirtBlockUI, _super);
+
+    function DirtBlockUI() {
+      var texture;
+      texture = PIXI.Texture.fromImage("images/dirt.png");
+      DirtBlockUI.__super__.constructor.call(this, texture);
+    }
+
+    return DirtBlockUI;
+
+  })(PIXI.Sprite);
+
+  (typeof exports !== "undefined" && exports !== null ? exports : this).DirtBlockUI = DirtBlockUI;
 
 }).call(this);
 
