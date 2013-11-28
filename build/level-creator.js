@@ -1,28 +1,61 @@
 (function() {
-  var DirtBlock;
+  var BlockBase;
 
-  DirtBlock = (function() {
+  BlockBase = (function() {
+    function BlockBase() {}
+
+    BlockBase.prototype.isDirt = function() {
+      return false;
+    };
+
+    BlockBase.prototype.isWater = function() {
+      return false;
+    };
+
+    return BlockBase;
+
+  })();
+
+  (typeof exports !== "undefined" && exports !== null ? exports : this).BlockBase = BlockBase;
+
+}).call(this);
+
+(function() {
+  var DirtBlock,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  DirtBlock = (function(_super) {
+    __extends(DirtBlock, _super);
+
     function DirtBlock(x, y) {
       this.x = x;
       this.y = y;
       this.ui = new DirtBlockUI(this.x, this.y);
     }
 
+    DirtBlock.prototype.isDirt = function() {
+      return true;
+    };
+
     return DirtBlock;
 
-  })();
+  })(BlockBase);
 
   (typeof exports !== "undefined" && exports !== null ? exports : this).DirtBlock = DirtBlock;
 
 }).call(this);
 
 (function() {
-  var LevelCreator;
+  var LevelCreator,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   LevelCreator = (function() {
     function LevelCreator(columns, rows) {
       this.columns = columns;
       this.rows = rows;
+      this.random = __bind(this.random, this);
+      this.seed = 123456;
       this.build();
     }
 
@@ -54,24 +87,35 @@
       }
     };
 
+    LevelCreator.prototype.random = function() {
+      var x;
+      x = Math.sin(this.seed++) * 10000;
+      return x - Math.floor(x);
+    };
+
     LevelCreator.prototype.determineBlock = function(x, y) {
-      var dBlock, dirtProbability, lBlock, rBlock, uBlock, waterProbability;
+      var dirtProbability, lBlock, uBlock, waterProbability;
       if (x === 0 && y === 0) {
         return new WaterBlock(x, y);
       } else {
         lBlock = this.blockAt(x - 1, y);
-        rBlock = this.blockAt(x + 1, y);
         uBlock = this.blockAt(x, y - 1);
-        dBlock = this.blockAt(x, y + 1);
         dirtProbability = 0.5;
         waterProbability = 0.5;
         if (lBlock && lBlock.isDirt()) {
-          dirtProbability += 0.2;
-          waterProbability -= 0.1;
+          dirtProbability += 0.1;
+          waterProbability += 0.2;
+        } else {
+          dirtProbability += 0.3;
+          waterProbability += 0.1;
+        }
+        if (uBlock && uBlock.isDirt()) {
+          dirtProbability -= 0.1;
+          waterProbability += 0.3;
         } else {
           dirtProbability += 0.3;
         }
-        if ((Math.random() + dirtProbability) > (Math.random() + waterProbability)) {
+        if ((this.random() + dirtProbability) > (this.random() + waterProbability)) {
           return new DirtBlock(x, y);
         } else {
           return new WaterBlock(x, y);
@@ -88,18 +132,26 @@
 }).call(this);
 
 (function() {
-  var WaterBlock;
+  var WaterBlock,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  WaterBlock = (function() {
+  WaterBlock = (function(_super) {
+    __extends(WaterBlock, _super);
+
     function WaterBlock(x, y) {
       this.x = x;
       this.y = y;
       this.ui = new WaterBlockUI(this.x, this.y);
     }
 
+    WaterBlock.prototype.isWater = function() {
+      return true;
+    };
+
     return WaterBlock;
 
-  })();
+  })(BlockBase);
 
   (typeof exports !== "undefined" && exports !== null ? exports : this).WaterBlock = WaterBlock;
 

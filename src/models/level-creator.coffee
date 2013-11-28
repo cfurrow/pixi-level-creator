@@ -1,6 +1,7 @@
 class LevelCreator
 
   constructor: (@columns, @rows) ->
+    @seed = 123456
     @build()
 
   build: ->
@@ -16,7 +17,10 @@ class LevelCreator
     catch
       null
 
-
+  random: () =>
+    x = Math.sin(@seed++) * 10000
+    x - Math.floor(x)
+    
   determineBlock: (x, y) ->
     #TODO: get surrounding blocks
     #TODO: get weights for next block
@@ -25,20 +29,25 @@ class LevelCreator
       new WaterBlock(x, y)
     else
       lBlock = @blockAt(x-1, y)
-      rBlock = @blockAt(x+1, y)
       uBlock = @blockAt(x, y-1)
-      dBlock = @blockAt(x, y+1)
 
       dirtProbability  = 0.5
       waterProbability = 0.5
 
       if lBlock and lBlock.isDirt()
-        dirtProbability  += 0.2
-        waterProbability -= 0.1
+        dirtProbability  += 0.1
+        waterProbability += 0.2
       else
         dirtProbability  += 0.3
+        waterProbability += 0.1 
 
-      if (Math.random() + dirtProbability) > (Math.random() + waterProbability)
+      if uBlock and uBlock.isDirt()
+        dirtProbability -= 0.1
+        waterProbability += 0.3
+      else
+        dirtProbability += 0.3
+
+      if (@random() + dirtProbability) > (@random() + waterProbability)
         new DirtBlock(x,y)
       else
         new WaterBlock(x,y)
