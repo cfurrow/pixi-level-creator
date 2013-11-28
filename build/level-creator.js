@@ -47,14 +47,35 @@
     };
 
     LevelCreator.prototype.blockAt = function(x, y) {
-      return this.blocks[x][y];
+      try {
+        return this.blocks[x][y];
+      } catch (_error) {
+        return null;
+      }
     };
 
     LevelCreator.prototype.determineBlock = function(x, y) {
-      if (x === 10 && y === 10) {
-        return new DirtBlock(x, y);
-      } else {
+      var dBlock, dirtProbability, lBlock, rBlock, uBlock, waterProbability;
+      if (x === 0 && y === 0) {
         return new WaterBlock(x, y);
+      } else {
+        lBlock = this.blockAt(x - 1, y);
+        rBlock = this.blockAt(x + 1, y);
+        uBlock = this.blockAt(x, y - 1);
+        dBlock = this.blockAt(x, y + 1);
+        dirtProbability = 0.5;
+        waterProbability = 0.5;
+        if (lBlock && lBlock.isDirt()) {
+          dirtProbability += 0.2;
+          waterProbability -= 0.1;
+        } else {
+          dirtProbability += 0.3;
+        }
+        if ((Math.random() + dirtProbability) > (Math.random() + waterProbability)) {
+          return new DirtBlock(x, y);
+        } else {
+          return new WaterBlock(x, y);
+        }
       }
     };
 
