@@ -18,8 +18,11 @@ class App
   sliderChanged: (event, ui) =>
     $ui = $(ui.handle)
     $slider = $ui.parents('li')
+    $value  = $slider.find('.value')
     isDirt  = $ui.parents('#dirt-sliders').length > 0
     index   = $slider.index()
+
+    $value.html(ui.value)
 
     if isDirt
       @creator.updateDirtProbability(index, ui.value)
