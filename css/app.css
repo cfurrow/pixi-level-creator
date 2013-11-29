@@ -1,0 +1,17 @@
+ul, li {
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+
+li {
+  margin-bottom: 10px; }
+
+#dirt-sliders, #water-sliders {
+  width: 500px;
+  display: inline-block; }
+
+#dirt-sliders .ui-slider-handle {
+  background-color: #894f0c; }
+
+#water-sliders .ui-slider-handle {
+  background-color: #487bc7; }

@@ -13,7 +13,21 @@ class App
 
     document.body.appendChild(@renderer.view)
     
-    requestAnimationFrame(@animate);
+    requestAnimationFrame(@animate)
+
+  sliderChanged: (event, ui) =>
+    $ui = $(ui.handle)
+    $slider = $ui.parents('li')
+    isDirt  = $ui.parents('#dirt-sliders').length > 0
+    index   = $slider.index()
+
+    if isDirt
+      @creator.updateDirtProbability(index, ui.value)
+    else
+      @creator.updateWaterProbability(index, ui.value)
+
+    @stage = new PIXI.Stage()
+    @buildBlockUI()
 
   buildBlockUI: () ->
     tag = 'div'
@@ -33,3 +47,10 @@ class App
     requestAnimationFrame(@animate)
 
 exports.app = new App()
+
+$ ->
+  $('.slider').slider
+    min: 0.0
+    max: 1.0
+    step: 0.01
+    slide: exports.app.sliderChanged

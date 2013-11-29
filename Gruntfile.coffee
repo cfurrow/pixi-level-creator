@@ -5,8 +5,12 @@ module.exports = (grunt) ->
     coffee: 
       compile: 
         files: 
-          #'path/to/result.js': 'path/to/source.coffee'
           'build/<%= pkg.name %>.js': ['src/models/*.coffee', 'src/ui/*.coffee' , 'src/*.coffee'] # compile and concat into single file
+
+    sass:      
+      dev:
+        files:
+          'css/app.css' : 'css/app.scss'
 
     uglify: 
       options: 
@@ -15,7 +19,8 @@ module.exports = (grunt) ->
         src: 'build/<%= pkg.name %>.js'
         dest: 'build/<%= pkg.name %>.min.js'
 
-  grunt.loadNpmTasks('grunt-contrib-coffee');
+  grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-uglify')
-  grunt.registerTask('default', ['coffee', 'uglify'])
+  grunt.loadNpmTasks('grunt-sass')
+  grunt.registerTask('default', ['coffee', 'sass', 'uglify'])
 

@@ -55,7 +55,9 @@
       this.columns = columns;
       this.rows = rows;
       this.random = __bind(this.random, this);
-      this.seed = 123456;
+      this.seed = 123;
+      this.dirtProbabilities = [0.2, 0.3, -0.1, 0.1];
+      this.waterProbabilities = [0.4, 0.1, 0.2, 0.0];
       this.build();
     }
 
@@ -93,27 +95,44 @@
       return x - Math.floor(x);
     };
 
+    LevelCreator.prototype.updateWaterProbability = function(index, value) {
+      this.waterProbabilities[index] = value;
+      return this.build();
+    };
+
+    LevelCreator.prototype.updateDirtProbability = function(index, value) {
+      this.dirtProbabilities[index] = value;
+      return this.build();
+    };
+
     LevelCreator.prototype.determineBlock = function(x, y) {
-      var dirtProbability, lBlock, uBlock, waterProbability;
+      var dirtProbability, lBlock, r1, r2, uBlock, waterProbability;
       if (x === 0 && y === 0) {
-        return new WaterBlock(x, y);
+        r1 = Math.random();
+        r2 = Math.random();
+        if (r1 > r2) {
+          return new WaterBlock(x, y);
+        } else {
+          return new DirtBlock(x, y);
+        }
       } else {
         lBlock = this.blockAt(x - 1, y);
         uBlock = this.blockAt(x, y - 1);
         dirtProbability = 0.5;
         waterProbability = 0.5;
         if (lBlock && lBlock.isDirt()) {
-          dirtProbability += 0.1;
-          waterProbability += 0.2;
+          dirtProbability += this.dirtProbabilities[0];
+          waterProbability += this.waterProbabilities[0];
         } else {
-          dirtProbability += 0.3;
-          waterProbability += 0.1;
+          dirtProbability += this.dirtProbabilities[1];
+          waterProbability += this.waterProbabilities[1];
         }
         if (uBlock && uBlock.isDirt()) {
-          dirtProbability -= 0.1;
-          waterProbability += 0.3;
+          dirtProbability += this.dirtProbabilities[2];
+          waterProbability += this.waterProbabilities[2];
         } else {
-          dirtProbability += 0.3;
+          dirtProbability += this.dirtProbabilities[3];
+          waterProbability += this.waterProbabilities[3];
         }
         if ((this.random() + dirtProbability) > (this.random() + waterProbability)) {
           return new DirtBlock(x, y);
@@ -219,6 +238,7 @@
     function App(containerEl) {
       this.containerEl = containerEl;
       this.animate = __bind(this.animate, this);
+      this.sliderChanged = __bind(this.sliderChanged, this);
       this.creator = new LevelCreator(WORLD_WIDTH / BLOCK_WIDTH, WORLD_HEIGHT / BLOCK_HEIGHT);
       this.renderer = new PIXI.WebGLRenderer(WORLD_WIDTH, WORLD_HEIGHT);
       this.stage = new PIXI.Stage();
@@ -226,6 +246,21 @@
       document.body.appendChild(this.renderer.view);
       requestAnimationFrame(this.animate);
     }
+
+    App.prototype.sliderChanged = function(event, ui) {
+      var $slider, $ui, index, isDirt;
+      $ui = $(ui.handle);
+      $slider = $ui.parents('li');
+      isDirt = $ui.parents('#dirt-sliders').length > 0;
+      index = $slider.index();
+      if (isDirt) {
+        this.creator.updateDirtProbability(index, ui.value);
+      } else {
+        this.creator.updateWaterProbability(index, ui.value);
+      }
+      this.stage = new PIXI.Stage();
+      return this.buildBlockUI();
+    };
 
     App.prototype.buildBlockUI = function() {
       var tag, ui, x, y, _i, _ref, _results;
@@ -259,5 +294,14 @@
   })();
 
   exports.app = new App();
+
+  $(function() {
+    return $('.slider').slider({
+      min: 0.0,
+      max: 1.0,
+      step: 0.01,
+      slide: exports.app.sliderChanged
+    });
+  });
 
 }).call(this);
