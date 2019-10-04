@@ -1,6 +1,9 @@
 {
   "name": "level-creator",
   "version": "0.1.0",
+  "dependencies": {
+    "diff": ">=3.5.0"
+  },
   "devDependencies": {
     "grunt": "~1.0.3",
     "grunt-contrib-copy": "^1.0.0",
