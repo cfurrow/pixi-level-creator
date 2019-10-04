@@ -1,3 +1,5 @@
+sass = require('node-sass');
+
 module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
@@ -7,7 +9,9 @@ module.exports = (grunt) ->
         files: 
           'build/<%= pkg.name %>.js': ['src/models/*.coffee', 'src/ui/*.coffee' , 'src/*.coffee'] # compile and concat into single file
 
-    sass:      
+    sass: 
+      options:
+        implementation: sass
       dev:
         files:
           'css/app.css' : 'css/app.scss'
